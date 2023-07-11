@@ -60,11 +60,11 @@ keyback = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=2)
 keyback.add("↩️برگشت↩️")
 @bot.message_handler(commands=["start"])
 def wellcome(message):
-	if message.chat.id == admin_id: 
+    if message.chat.id == admin_id: 
         bot.send_message(message.chat.id, "😃سلام عشقم", reply_markup=key1)
 @bot.message_handler()
 def info(message):
-	if message.chat.id == admin_id: 
+    if message.chat.id == admin_id: 
         if message.text == "✍️افزودن کاربر✍️":
             msg = bot.send_message(message.chat.id, "🎃نام کاربر را وارد کنید :",reply_markup=keyback)
             bot.register_next_step_handler(msg, name)
@@ -72,10 +72,10 @@ def info(message):
             mssg = bot.send_message(message.chat.id, "🎃نام کاربر را وارد کنید :",reply_markup=keyback)
             bot.register_next_step_handler(mssg, namede)
         elif message.text == "⚙️محدودیت حجم⚙️":
-        	msg = bot.send_message(message.chat.id, "🎃نام کاربر را وارد کنید :",reply_markup=keyback)
+            msg = bot.send_message(message.chat.id, "🎃نام کاربر را وارد کنید :",reply_markup=keyback)
             bot.register_next_step_handler(msg, nameha)
         elif message.text == "⚙️تاریخ انقضاء⚙️":
-        	msg = bot.send_message(message.chat.id, "🎃نام کاربر را وارد کنید :",reply_markup=keyback)
+            msg = bot.send_message(message.chat.id, "🎃نام کاربر را وارد کنید :",reply_markup=keyback)
             bot.register_next_step_handler(msg, nameen)
 def name(message):
     if message.text == "↩️برگشت↩️":
@@ -86,9 +86,9 @@ def name(message):
         msg = bot.send_message(message.chat.id, "🎃رمز کاربر را وارد کنید : ",reply_markup=keyback)
         bot.register_next_step_handler(msg, ramz)  
 def ramz(message):
-	global ramzk
+    global ramzk
     ramzk = message.text
-	create_user(namek, ramzk)
+    create_user(namek, ramzk)
     bot.send_message(message.chat.id,"☠️your user has been created✅"+"\n💥username :" " " + namek+"\n💥password :" " " + ramzk +"\n🔗Link :"+" "+"ssh://"+namek+":"+ramzk+"@"+host+":"+portt+"#"+namek)
 bot.infinity_polling()
         
