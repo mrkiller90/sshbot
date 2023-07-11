@@ -7,13 +7,10 @@ import re
 print("Wellcome To Mr-Killer Bot Script !\n id : @Mr_Killer_1\n")
 portt = input("Enter Your Server Port : ")
 host = input("Enter Your Domin(no http) : ")
-ipp = input("Enter Your server Ip : ")
-ippt = int(ipp)
-banner = input("Enter Banner Text : ")
+bannert = input("Enter Banner Text : ")
 token = input("Enter Bot Token : ")
 adminid = input("Enter Admin ID : ")
 admin_id = int(adminid)
-passw = input("Enter Your Root Password : ")
 #تنظیم تاریخ انقضاء 
 def set_account_expiration(username, date):
     command = f"chage -E {date} {username}"
@@ -29,14 +26,7 @@ def limit_ssh_connections(username, max_connections):
     subprocess.run("sudo systemctl restart sshd", shell=True)
 #ساخت یوزر
 def create_user(username, password):
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(ippt, port=portt, username='root', password=passw)
-    create_user_command = f'useradd -s /usr/sbin/nologin {username}'
-    stdin, stdout, stderr = client.exec_command(create_user_command)
-    set_password_command = f'echo {password} | passwd {username} --stdin'
-    stdin, stdout, stderr = client.exec_command(set_password_command)
-    client.close()
+    os.system(f'useradd -m -p $(openssl passwd -1 {password}) -s /sbin/nologin {username}')
 #رمزنگاری ssh
 def replace_line(filepath, pattern, replacement):
     for line in fileinput.input(filepath, inplace=True):
