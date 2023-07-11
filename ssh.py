@@ -63,7 +63,8 @@ def wellcome(message):
 	if message.chat.id == admin_id: 
         bot.send_message(message.chat.id, "😃سلام عشقم", reply_markup=key1)
 @bot.message_handler()
-if message.chat.id == admin_id: 
+def info(message):
+	if message.chat.id == admin_id: 
         if message.text == "✍️افزودن کاربر✍️":
             msg = bot.send_message(message.chat.id, "🎃نام کاربر را وارد کنید :",reply_markup=keyback)
             bot.register_next_step_handler(msg, name)
