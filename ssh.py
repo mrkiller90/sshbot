@@ -86,6 +86,11 @@ def ramz(message):
     ramzk = message.text
     create_user(namek,ramzk)
     bot.send_message(message.chat.id,"☠️your user has been created✅"+"\n💥username :" " " + namek+"\n💥password :" " " + ramzk +"\n🔗Link :"+" "+"ssh://"+namek+":"+ramzk+"@"+host+":"+portt+"#"+namek)
+def named(message):
+	global dellu
+    dellu = message.text
+    os.system("sudo deluser"+" "+dellu)
+    bot.send_message(message.chat.id,"👹حله پدرش یام‌ یام شد!")
 bot.infinity_polling()
         
         
