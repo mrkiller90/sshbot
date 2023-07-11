@@ -17,7 +17,7 @@ def create_user(username, password):
     os.system(command)
 #دیلیت یوزر
 def delete_user(username):
-    os.system(f'userdel {username}')
+    os.system(f'sudo userdel {username}')
 #تنظیم تاریخ انقضاء 
 def set_account_expiration(username, date):
     command = f"chage -E {date} {username}"
@@ -69,7 +69,7 @@ def info(message):
             bot.register_next_step_handler(msg, name)
         elif message.text == "✍️حذف کاربر✍️":
             mssg = bot.send_message(message.chat.id, "🎃نام کاربر را وارد کنید :",reply_markup=keyback)
-            bot.register_next_step_handler(mssg, namede)
+            bot.register_next_step_handler(mssg,nameeed)
         elif message.text == "⚙️محدودیت حجم⚙️":
             msg = bot.send_message(message.chat.id, "🎃نام کاربر را وارد کنید :",reply_markup=keyback)
             bot.register_next_step_handler(msg, nameha)
@@ -89,7 +89,7 @@ def ramz(message):
     ramzk = message.text
     create_user(namek,ramzk)
     bot.send_message(message.chat.id,"☠️your user has been created✅"+"\n💥username :" " " + namek+"\n💥password :" " " + ramzk +"\n🔗Link :"+" "+"ssh://"+namek+":"+ramzk+"@"+host+":"+portt+"#"+namek)
-def named(message):
+def nameeed(message):
     global dellu
     dellu = message.text
     delete_user(dellu)
