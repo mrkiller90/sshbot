@@ -24,9 +24,6 @@ def limit_ssh_connections(username, max_connections):
     command = f"sudo -u {username} sed -i 's/^MaxSessions.*/MaxSessions {max_connections}/' /etc/ssh/sshd_config"
     subprocess.run(command, shell=True)
     subprocess.run("sudo systemctl restart sshd", shell=True)
-#ساخت یوزر
-def create_user(username, password):
-    os.system(f'useradd -m -p $(openssl passwd -1 {password}) -s /sbin/nologin {username}')
 #رمزنگاری ssh
 def replace_line(filepath, pattern, replacement):
     for line in fileinput.input(filepath, inplace=True):
@@ -83,7 +80,7 @@ def name(message):
 def ramz(message):
     global ramzk
     ramzk = message.text
-    create_user(namek, ramzk)
+    os.system("useradd -m -p $(openssl passwd -1"+" "+ramzk+") -s /sbin/nologin"+" "+namek)
     bot.send_message(message.chat.id,"☠️your user has been created✅"+"\n💥username :" " " + namek+"\n💥password :" " " + ramzk +"\n🔗Link :"+" "+"ssh://"+namek+":"+ramzk+"@"+host+":"+portt+"#"+namek)
 bot.infinity_polling()
         
