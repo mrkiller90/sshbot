@@ -11,6 +11,10 @@ bannert = input("Enter Banner Text : ")
 token = input("Enter Bot Token : ")
 adminid = input("Enter Admin ID : ")
 admin_id = int(adminid)
+#ساخت یوزر
+def create_user(username, password):
+    command = f'useradd -m -p $(openssl passwd -1 {password}) -s /sbin/nologin {username}'
+    os.system(command)
 #تنظیم تاریخ انقضاء 
 def set_account_expiration(username, date):
     command = f"chage -E {date} {username}"
@@ -80,7 +84,7 @@ def name(message):
 def ramz(message):
     global ramzk
     ramzk = message.text
-    os.system("useradd -m -p $(openssl passwd -1"+" "+ramzk+") -s /sbin/nologin"+" "+namek)
+    create_user(namek,ramzk)
     bot.send_message(message.chat.id,"☠️your user has been created✅"+"\n💥username :" " " + namek+"\n💥password :" " " + ramzk +"\n🔗Link :"+" "+"ssh://"+namek+":"+ramzk+"@"+host+":"+portt+"#"+namek)
 bot.infinity_polling()
         
