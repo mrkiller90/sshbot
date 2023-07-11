@@ -2,12 +2,17 @@ import telebot
 import os
 import subprocess
 import paramiko
+import fileinput
+import re
 print("Wellcome To Mr-Killer Bot Script !\n id : @Mr_Killer_1\n")
 portt = input("Enter Your Server Port : ")
 host = input("Enter Your Domin(no http) : ")
+ipp = input("Enter Your server Ip : ")
+ippt = int(ipp)
 banner = input("Enter Banner Text : ")
 token = input("Enter Bot Token : ")
-admin_id = input("Enter Admin ID : ")
+adminid = input("Enter Admin ID : ")
+admin_id = int(adminid)
 passw = input("Enter Your Root Password : ")
 #تنظیم تاریخ انقضاء 
 def set_account_expiration(username, date):
@@ -26,7 +31,7 @@ def limit_ssh_connections(username, max_connections):
 def create_user(username, password):
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect('hostname', port=portt, username='root', password=passw)
+    client.connect(ippt, port=portt, username='root', password=passw)
     create_user_command = f'useradd -s /usr/sbin/nologin {username}'
     stdin, stdout, stderr = client.exec_command(create_user_command)
     set_password_command = f'echo {password} | passwd {username} --stdin'
