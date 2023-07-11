@@ -15,6 +15,9 @@ admin_id = int(adminid)
 def create_user(username, password):
     command = f'useradd -m -p $(openssl passwd -1 {password}) -s /sbin/nologin {username}'
     os.system(command)
+#دیلیت یوزر
+def delete_user(username):
+    os.system(f'userdel {username}')
 #تنظیم تاریخ انقضاء 
 def set_account_expiration(username, date):
     command = f"chage -E {date} {username}"
@@ -87,9 +90,9 @@ def ramz(message):
     create_user(namek,ramzk)
     bot.send_message(message.chat.id,"☠️your user has been created✅"+"\n💥username :" " " + namek+"\n💥password :" " " + ramzk +"\n🔗Link :"+" "+"ssh://"+namek+":"+ramzk+"@"+host+":"+portt+"#"+namek)
 def named(message):
-	global dellu
+    global dellu
     dellu = message.text
-    os.system("sudo deluser"+" "+dellu)
+    delete_user(dellu)
     bot.send_message(message.chat.id,"👹حله پدرش یام‌ یام شد!")
 bot.infinity_polling()
         
