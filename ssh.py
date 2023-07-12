@@ -26,12 +26,8 @@ def set_quota(username, max_size):
     subprocess.run(['sudo', 'quota', '-u', username, max_size])
 #تنظیم تاریخ انقضاء 
 def set_account_expiration(username, date):
-    command = f"chage -E {date} {username}"
-    try:
-        subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        error_message = e.output.decode('utf-8')
-        print(f"An error occurred while setting the account expiration date: {error_message}")
+    command = f"sudo chage -E {date} {username}"
+    os.system(command)
 #محدودیت تعداد کاربر
 def limit_ssh_connections(username, max_connections):
     command = f"sudo -u {username} sed -i 's/^MaxSessions.*/MaxSessions {max_connections}/' /etc/ssh/sshd_config"
