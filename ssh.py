@@ -136,7 +136,7 @@ def nameen(message):
 def tarikh(message):
     global tari
     tari = message.text
-    input_date = datetime.datetime.strptime(tarikh, "%Y-%m-%d")
+    input_date = datetime.datetime.strptime(tari, "%Y-%m-%d")
     set_expiration_date(namett,input_date)
     bot.send_message(message.chat.id,"🍷تاریخ کاربر ست شد !")  
 def nametedd(message):
