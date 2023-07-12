@@ -19,20 +19,22 @@ def create_user(username, password):
 def delete_user(username):
     os.system(f'sudo userdel {username}')
 #محدودیت حجم
-def set_quota(username, max_size):
-    subprocess.run(['sudo', 'quotaon', '-avug'])
-    subprocess.run(['sudo', 'edquota', '-u', username])
-    subprocess.run(['sudo', 'quotacheck', '-m', '-avug'])
-    subprocess.run(['sudo', 'quota', '-u', username, max_size])
+import os
+
+def set_user_ssh_quota(username, quota_gb):
+    quota_kb = quota_gb * 1024 * 1024
+    os.system(f"sudo setquota -u {username} {quota_kb} {quota_kb} 0 0 /")
+
+
+
 #تنظیم تاریخ انقضاء 
-def set_ssh_user_expiry(user, expiry_date):
-    command= f'sudo chage --expiredate {expiry_date} {user}'
+def set_expiration_date(username, date):
+    command = f"sudo setquota -u {username} {date}"
     os.system(command)
 #محدودیت تعداد کاربر
-def limit_ssh_connections(username, max_connections):
-    command = f"sudo -u {username} sed -i 's/^MaxSessions.*/MaxSessions {max_connections}/' /etc/ssh/sshd_config"
-    subprocess.run(command, shell=True)
-    subprocess.run("sudo systemctl restart sshd", shell=True)
+def limit_ssh_connections(username, max_logins):
+    command = f"sudo usermod --maxlogins {max_logins} {username}"
+    os.system(command)
 #رمزنگاری ssh
 def replace_line(filepath, pattern, replacement):
     for line in fileinput.input(filepath, inplace=True):
@@ -107,8 +109,7 @@ def nameha(message):
 def hagm(message):
     global hagmm
     hagmm = message.text
-    maxz = str(hagm) + "G"
-    set_quota(mah, maxz)
+    set_user_ssh_quota(mah, hagmm)
     bot.send_message(message.chat.id,"🍷حجم کاربر ست شد !")  
 def nameen(message):
     global namett
@@ -118,7 +119,7 @@ def nameen(message):
 def tarikh(message):
     global tari
     tari = message.text
-    set_ssh_user_expiry(namett,tarikh)
+    set_expiration_date(namett,tarikh)
     bot.send_message(message.chat.id,"🍷تاریخ کاربر ست شد !")  
 def nametedd(message):
     global utedd 
