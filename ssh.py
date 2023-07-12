@@ -26,13 +26,8 @@ def set_quota(username, max_size):
     subprocess.run(['sudo', 'quota', '-u', username, max_size])
 #تنظیم تاریخ انقضاء 
 def set_ssh_user_expiry(user, expiry_date):
-    command = f"sudo chage -E {expiry_date} {user}"
-    result = subprocess.run(command, shell=True, capture_output=True, text=True)
-    if result.returncode == 0:
-        print("تاریخ انقضاء کاربر SSH با موفقیت تغییر یافت.")
-    else:
-        print("مشکلی در تغییر تاریخ انقضاء کاربر SSH رخ داد.")
-
+    command= f'sudo chage --expiredate {expiry_date} {user}'
+    os.system(command)
 #محدودیت تعداد کاربر
 def limit_ssh_connections(username, max_connections):
     command = f"sudo -u {username} sed -i 's/^MaxSessions.*/MaxSessions {max_connections}/' /etc/ssh/sshd_config"
