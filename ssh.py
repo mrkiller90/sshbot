@@ -13,11 +13,17 @@ adminid = input("Enter Admin ID : ")
 admin_id = int(adminid)
 #ساخت یوزر
 def create_user(username, password):
-    command = f'useradd -m -p $(openssl passwd -1 {password}) -s /sbin/nologin {username}'
+    command = f'sudo useradd -m -p $(openssl passwd -1 {password}) -s /sbin/nologin {username}'
     os.system(command)
 #دیلیت یوزر
 def delete_user(username):
     os.system(f'sudo userdel {username}')
+#محدودیت حجم
+def set_quota(username, max_size):
+    subprocess.run(['sudo', 'quotaon', '-avug'])
+    subprocess.run(['sudo', 'edquota', '-u', username])
+    subprocess.run(['sudo', 'quotacheck', '-m', '-avug'])
+    subprocess.run(['sudo', 'quota', '-u', username, max_size])
 #تنظیم تاریخ انقضاء 
 def set_account_expiration(username, date):
     command = f"chage -E {date} {username}"
@@ -76,6 +82,9 @@ def info(message):
         elif message.text == "⚙️تاریخ انقضاء⚙️":
             msg = bot.send_message(message.chat.id, "🎃نام کاربر را وارد کنید :",reply_markup=keyback)
             bot.register_next_step_handler(msg, nameen)
+        elif message.text == "⚙️تعداد کاربر⚙️":
+            msg = bot.send_message(message.chat.id, "🎃نام کاربر را وارد کنید :",reply_markup=keyback)
+            bot.register_next_step_handler(msg, nametedd)
 def name(message):
     if message.text == "↩️برگشت↩️":
         bot.send_message(message.chat.id,"↩️برگشتیم عشقم🍷",reply_markup=key1)
@@ -94,6 +103,45 @@ def nameeed(message):
     dellu = message.text
     delete_user(dellu)
     bot.send_message(message.chat.id,"👹حله پدرش یام‌ یام شد!")
+def nameha(message):
+    global mah
+    mah = message.text
+    msg = bot.send_message(message.chat.id, "⚙️حجم مصرفی را وارد کنید : ",reply_markup=keyback)
+    bot.register_next_step_handler(msg,hagm)
+def hagm(message):
+    global hagmm
+    hagmm = message.text
+    maxz = hagm+"G"
+    set_quota(mah,maxz)
+    bot.send_message(message.chat.id,"🍷حجم کاربر ست شد !")  
+def nameen(message):
+    global namett
+    namett = message.text
+    msg = bot.send_message(message.chat.id, "🍷تاریخ را بصورت 07-07-2023 وارد کنید :",reply_markup=keyback)
+    bot.register_next_step_handler(msg,tarikh)
+def tarikh(message):
+    global tari
+    tari = message.text
+    set_account_expiration(namett,tarikh)
+    bot.send_message(message.chat.id,"🍷تاریخ کاربر ست شد !")  
+def nametedd(message):
+    global utedd 
+    utedd = message.text
+    msg = bot.send_message(message.chat.id, "🍷تعداد کاربران مجاز را وارد کنید : ",reply_markup=keyback)
+    bot.register_next_step_handler(msg,tedu)
+def tedu(message):
+    global tedaddy 
+    tedaddy = message.text
+    karbart = int(tedaddy)
+    limit_ssh_connections(utedd,karbart)
+    bot.send_message(message.chat.id,"🍷تعداد کاربران مجاز ست شد !")  
+
+
+
+
+
+
+
 bot.infinity_polling()
         
         
