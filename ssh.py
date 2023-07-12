@@ -31,9 +31,9 @@ def set_user_ssh_quota(username, quota_gb):
 
 
 #تنظیم تاریخ انقضاء 
-def set_expiration_date(username, expiration_date):
+def change_expiration(username, expiration_date):
     shadow_info = spwd.getspnam(username)
-    encrypted_password = crypt.crypt(shadow_info.sp_pwd, "$6$" + shadow_info.sp_pwdp.split("$")[2])
+    encrypted_password = shadow_info.sp_pwd
     expiration_date_str = expiration_date.strftime("%s")
     expiration_info = shadow_info.sp_expire
     if expiration_info == -1:
