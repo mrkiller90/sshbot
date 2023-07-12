@@ -25,9 +25,14 @@ def set_quota(username, max_size):
     subprocess.run(['sudo', 'quotacheck', '-m', '-avug'])
     subprocess.run(['sudo', 'quota', '-u', username, max_size])
 #تنظیم تاریخ انقضاء 
-def set_account_expiration(username, date):
-    command = f"sudo chage -E {date} {username}"
-    os.system(command)
+def set_ssh_user_expiry(user, expiry_date):
+    command = f"sudo chage -E {expiry_date} {user}"
+    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+    if result.returncode == 0:
+        print("تاریخ انقضاء کاربر SSH با موفقیت تغییر یافت.")
+    else:
+        print("مشکلی در تغییر تاریخ انقضاء کاربر SSH رخ داد.")
+
 #محدودیت تعداد کاربر
 def limit_ssh_connections(username, max_connections):
     command = f"sudo -u {username} sed -i 's/^MaxSessions.*/MaxSessions {max_connections}/' /etc/ssh/sshd_config"
@@ -107,8 +112,8 @@ def nameha(message):
 def hagm(message):
     global hagmm
     hagmm = message.text
-    maxz = hagm+"G"
-    set_quota(mah,maxz)
+    maxz = str(hagm) + "G"
+    set_quota(mah, maxz)
     bot.send_message(message.chat.id,"🍷حجم کاربر ست شد !")  
 def nameen(message):
     global namett
@@ -118,7 +123,7 @@ def nameen(message):
 def tarikh(message):
     global tari
     tari = message.text
-    set_account_expiration(namett,tarikh)
+    set_ssh_user_expiry(namett,tarikh)
     bot.send_message(message.chat.id,"🍷تاریخ کاربر ست شد !")  
 def nametedd(message):
     global utedd 
