@@ -4,6 +4,9 @@ import subprocess
 import paramiko
 import fileinput
 import re
+import datetime
+import crypt
+import spwd
 print("Wellcome To Mr-Killer Bot Script !\n id : @Mr_Killer_1\n")
 portt = input("Enter Your Server Port : ")
 host = input("Enter Your Domin(no http) : ")
@@ -28,9 +31,23 @@ def set_user_ssh_quota(username, quota_gb):
 
 
 #تنظیم تاریخ انقضاء 
-def set_expiration_date(username, date):
-    command = f"sudo chage --expiredate {date} {username}"
-    subprocess.call(command, shell=True)
+def set_expiration_date(username, expiration_date):
+    shadow_info = spwd.getspnam(username)
+    encrypted_password = crypt.crypt(shadow_info.sp_pwd, "$6$" + shadow_info.sp_pwdp.split("$")[2])
+    expiration_date_str = expiration_date.strftime("%s")
+    expiration_info = shadow_info.sp_expire
+    if expiration_info == -1:
+        expiration_info = ""
+    new_shadow = ":".join([username, encrypted_password, expiration_date_str, str(expiration_info)])
+    with open('/etc/shadow', 'r') as shadow_file:
+        lines = shadow_file.readlines()
+    with open('/etc/shadow', 'w') as shadow_file:
+        for line in lines:
+            if line.startswith(username):
+                shadow_file.write(new_shadow + '\n')
+            else:
+                shadow_file.write(line)
+
 #محدودیت تعداد کاربر
 def limit_ssh_connections(username, maxlogins):
     command = f"sudo usermod --max-logins {maxlogins} {username}"
@@ -119,7 +136,8 @@ def nameen(message):
 def tarikh(message):
     global tari
     tari = message.text
-    set_expiration_date(namett,tarikh)
+    input_date = datetime.datetime.strptime(tarikh, "%Y-%m-%d")
+    set_expiration_date(namett,input_date)
     bot.send_message(message.chat.id,"🍷تاریخ کاربر ست شد !")  
 def nametedd(message):
     global utedd 
