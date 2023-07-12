@@ -29,11 +29,11 @@ def set_user_ssh_quota(username, quota_gb):
 
 #تنظیم تاریخ انقضاء 
 def set_expiration_date(username, date):
-    command = f"sudo setquota -u {username} {date}"
+    command = f"sudo usermod -e {date} {username}"
     os.system(command)
 #محدودیت تعداد کاربر
 def limit_ssh_connections(username, max_logins):
-    command = f"sudo usermod --maxlogins {max_logins} {username}"
+    command = f"sudo usermod --max-logins {maxlogins} {username}"
     os.system(command)
 #رمزنگاری ssh
 def replace_line(filepath, pattern, replacement):
