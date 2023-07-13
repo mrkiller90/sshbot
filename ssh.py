@@ -4,7 +4,6 @@ import subprocess
 import paramiko
 import fileinput
 import re
-import datetime
 import crypt
 import spwd
 print("Wellcome To Mr-Killer Bot Script !\n id : @Mr_Killer_1\n")
@@ -174,13 +173,6 @@ def tedu(message):
         karbart = int(tedaddy)
         limit_ssh_connections(utedd,karbart)
         bot.send_message(message.chat.id,"🍷تعداد کاربران مجاز ست شد !")  
-
-
-
-
-
-
-
 bot.infinity_polling()
         
         
