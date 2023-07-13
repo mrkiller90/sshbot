@@ -30,9 +30,11 @@ def change_expiration(username, expiration_date):
     command = f"sudo chage -E {expiration_date} {username}"
     subprocess.call(command, shell=True)
 #محدودیت تعداد کاربر
-def limit_ssh_connections(username, maxlogins):
-    command = f"sudo usermod --max-logins {maxlogins} {username}"
-    os.system(command)
+def limit_ssh_connections(username, max_sessions):
+    command = f"sed -i 's/^#MaxSessions.*$/MaxSessions {max_sessions}/' /etc/ssh/sshd_config"
+    subprocess.run(['bash', '-c', command])
+    restart_command = "service ssh restart"
+    subprocess.run(['bash', '-c', restart_command])
 #رمزنگاری ssh
 def replace_line(filepath, pattern, replacement):
     for line in fileinput.input(filepath, inplace=True):
@@ -49,14 +51,32 @@ def check_line(filepath, pattern):
 if not check_line(sshd_config_file, replacement):
     replace_line(sshd_config_file, pattern, replacement)
 #تنظیم متن بنر 
-os.system("rm -r /root/banner.txt")
-f = open("/root/banner.txt", "a+")
-f.write(bannert)
-f.close()
+def update_sshd_config(banner_path):
+    ssh_config = '/etc/ssh/sshd_config'
+    banner = f'Banner {banner_path}'
+    updated = False
+    for line in fileinput.input(ssh_config, inplace=True):
+        if line.strip().startswith('#Banner none'):
+            print(banner)
+            updated = True
+        elif line.strip().startswith('Banner') and not line.strip().startswith(banner):
+            print(banner)
+            updated = True
+        else:
+            print(line.rstrip())
+    if not updated:
+        with open(ssh_config, 'a') as f:
+            f.write(f'\n{banner}\n')
+    fileinput.close()
+banner_file = '/root/banner.txt'
+if not os.path.exists(banner_file):
+    print(f'فایل بنر ({banner_file}) یافت نشد!')
+else:
+    update_sshd_config(banner_file)
 #شروع ربات
 bot = telebot.TeleBot(token)  
 key1 = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=2)
-key1.add("✍️افزودن کاربر✍️","✍️حذف کاربر✍️","⚙️محدودیت حجم⚙️","⚙️تاریخ انقضاء⚙️")
+key1.add("✍️افزودن کاربر✍️","✍️حذف کاربر✍️","⚙️محدودیت حجم⚙️","⚙️تاریخ انقضاء⚙️","⚙️تعداد کاربر⚙️")
 keyback = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=2)
 keyback.add("↩️برگشت↩️")
 @bot.message_handler(commands=["start"])
@@ -90,46 +110,70 @@ def name(message):
         msg = bot.send_message(message.chat.id, "🎃رمز کاربر را وارد کنید : ",reply_markup=keyback)
         bot.register_next_step_handler(msg, ramz)  
 def ramz(message):
-    global ramzk
-    ramzk = message.text
-    create_user(namek,ramzk)
-    bot.send_message(message.chat.id,"☠️your user has been created✅"+"\n💥username :" " " + namek+"\n💥password :" " " + ramzk +"\n🔗Link :"+" "+"ssh://"+namek+":"+ramzk+"@"+host+":"+portt+"#"+namek)
+    if message.text == "↩️برگشت↩️":
+        bot.send_message(message.chat.id,"↩️برگشتیم عشقم🍷",reply_markup=key1)
+    else:
+        global ramzk
+        ramzk = message.text
+        create_user(namek,ramzk)
+        bot.send_message(message.chat.id,"☠️your user has been created✅"+"\n💥username :" " " + namek+"\n💥password :" " " + ramzk +"\n🔗Link :"+" "+"ssh://"+namek+":"+ramzk+"@"+host+":"+portt+"#"+namek)
 def nameeed(message):
-    global dellu
-    dellu = message.text
-    delete_user(dellu)
-    bot.send_message(message.chat.id,"👹حله پدرش یام‌ یام شد!")
+    if message.text == "↩️برگشت↩️":
+        bot.send_message(message.chat.id,"↩️برگشتیم عشقم🍷",reply_markup=key1)
+    else:
+        global dellu
+        dellu = message.text
+        delete_user(dellu)
+        bot.send_message(message.chat.id,"👹حله پدرش یام‌ یام شد!")
 def nameha(message):
-    global mah
-    mah = message.text
-    msg = bot.send_message(message.chat.id, "⚙️حجم مصرفی را وارد کنید : ",reply_markup=keyback)
-    bot.register_next_step_handler(msg,hagm)
+    if message.text == "↩️برگشت↩️":
+        bot.send_message(message.chat.id,"↩️برگشتیم عشقم🍷",reply_markup=key1)
+    else:
+        global mah
+        mah = message.text
+        msg = bot.send_message(message.chat.id, "⚙️حجم مصرفی را وارد کنید : ",reply_markup=keyback)
+        bot.register_next_step_handler(msg,hagm)
 def hagm(message):
-    global hagmm
-    hagmm = message.text
-    set_user_ssh_quota(mah, hagmm)
-    bot.send_message(message.chat.id,"🍷حجم کاربر ست شد !")  
+    if message.text == "↩️برگشت↩️":
+        bot.send_message(message.chat.id,"↩️برگشتیم عشقم🍷",reply_markup=key1)
+    else:
+        global hagmm
+        hagmm = message.text
+        set_user_ssh_quota(mah, hagmm)
+        bot.send_message(message.chat.id,"🍷حجم کاربر ست شد !")  
 def nameen(message):
-    global namett
-    namett = message.text
-    msg = bot.send_message(message.chat.id, "🍷تاریخ را بصورت 07-07-2023 وارد کنید :",reply_markup=keyback)
-    bot.register_next_step_handler(msg,tarikh)
+    if message.text == "↩️برگشت↩️":
+        bot.send_message(message.chat.id,"↩️برگشتیم عشقم🍷",reply_markup=key1)
+    else:
+        global namett
+        namett = message.text
+        msg = bot.send_message(message.chat.id, "🍷تاریخ را بصورت 07-07-2023 وارد کنید :",reply_markup=keyback)
+        bot.register_next_step_handler(msg,tarikh)
 def tarikh(message):
-    global tari
-    tari = message.text
-    change_expiration(namett,tari)
-    bot.send_message(message.chat.id,"🍷تاریخ کاربر ست شد !")  
+    if message.text == "↩️برگشت↩️":
+        bot.send_message(message.chat.id,"↩️برگشتیم عشقم🍷",reply_markup=key1)
+    else:
+        global tari
+        tari = message.text
+        change_expiration(namett,tari)
+        bot.send_message(message.chat.id,"🍷تاریخ کاربر ست شد !")  
 def nametedd(message):
-    global utedd 
-    utedd = message.text
-    msg = bot.send_message(message.chat.id, "🍷تعداد کاربران مجاز را وارد کنید : ",reply_markup=keyback)
-    bot.register_next_step_handler(msg,tedu)
+    if message.text == "↩️برگشت↩️":
+        bot.send_message(message.chat.id,"↩️برگشتیم عشقم🍷",reply_markup=key1)
+    else:
+        global utedd 
+        utedd = message.text
+        msg = bot.send_message(message.chat.id, "🍷تعداد کاربران مجاز را وارد کنید : ",reply_markup=keyback)
+        bot.register_next_step_handler(msg,tedu)
 def tedu(message):
-    global tedaddy 
-    tedaddy = message.text
-    karbart = int(tedaddy)
-    limit_ssh_connections(utedd,karbart)
-    bot.send_message(message.chat.id,"🍷تعداد کاربران مجاز ست شد !")  
+    if message.text == "↩️برگشت↩️":
+        bot.send_message(message.chat.id,"↩️برگشتیم عشقم🍷",reply_markup=key1)
+    else:
+        global tedaddy 
+        tedaddy = message.text
+        karbart = int(tedaddy)
+        limit_ssh_connections(utedd,karbart)
+        bot.send_message(message.chat.id,"🍷تعداد کاربران مجاز ست شد !")  
 
 
 
