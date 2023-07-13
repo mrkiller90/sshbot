@@ -50,28 +50,22 @@ def check_line(filepath, pattern):
 if not check_line(sshd_config_file, replacement):
     replace_line(sshd_config_file, pattern, replacement)
 #تنظیم متن بنر 
-def update_sshd_config(banner_path):
-    ssh_config = '/etc/ssh/sshd_config'
-    banner = f'Banner {banner_path}'
-    updated = False
-    for line in fileinput.input(ssh_config, inplace=True):
-        if line.strip().startswith('#Banner none'):
-            print(banner)
-            updated = True
-        elif line.strip().startswith('Banner') and not line.strip().startswith(banner):
-            print(banner)
-            updated = True
-        else:
-            print(line.rstrip())
-    if not updated:
-        with open(ssh_config, 'a') as f:
-            f.write(f'\n{banner}\n')
-    fileinput.close()
-banner_file = '/root/banner.txt'
-if not os.path.exists(banner_file):
-    print(f'فایل بنر ({banner_file}) یافت نشد!')
-else:
-    update_sshd_config(banner_file)
+f = open("banner.txt", "a+")
+f.close()
+def replace_line(filepathh, patternn, replacementt):
+    for line in fileinput.input(filepathh, inplace=True):
+        updated_line = re.sub(patternn, replacementt, line)
+        print(updated_line, end='')
+sshd_config_file = '/etc/ssh/sshd_config'
+patternn = r'^#Banner none'
+replacement = 'Banner /root/banner.txt'
+def check_line(filepathh, patternn):
+    for line in fileinput.input(filepathh):
+        if re.search(patternn, line):
+            return True
+    return False
+if not check_line(sshd_config_file, replacementt):
+    replace_line(sshd_config_file, patternn, replacementt)
 #شروع ربات
 bot = telebot.TeleBot(token)  
 key1 = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=2)
