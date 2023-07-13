@@ -9,7 +9,6 @@ import spwd
 print("Wellcome To Mr-Killer Bot Script !\n id : @Mr_Killer_1\n")
 portt = input("Enter Your Server Port : ")
 host = input("Enter Your Domin(no http) : ")
-bannert = input("Enter Banner Text : ")
 token = input("Enter Bot Token : ")
 adminid = input("Enter Admin ID : ")
 admin_id = int(adminid)
