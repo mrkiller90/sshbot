@@ -22,32 +22,13 @@ def create_user(username, password):
 def delete_user(username):
     os.system(f'sudo userdel {username}')
 #محدودیت حجم
-import os
-
 def set_user_ssh_quota(username, quota_gb):
     quota_kb = quota_gb * 1024 * 1024
     os.system(f"sudo setquota -u {username} {quota_kb} {quota_kb} 0 0 /")
-
-
-
 #تنظیم تاریخ انقضاء 
 def change_expiration(username, expiration_date):
-    shadow_info = spwd.getspnam(username)
-    encrypted_password = shadow_info.sp_pwd
-    expiration_date_str = expiration_date.strftime("%s")
-    expiration_info = shadow_info.sp_expire
-    if expiration_info == -1:
-        expiration_info = ""
-    new_shadow = ":".join([username, encrypted_password, expiration_date_str, str(expiration_info)])
-    with open('/etc/shadow', 'r') as shadow_file:
-        lines = shadow_file.readlines()
-    with open('/etc/shadow', 'w') as shadow_file:
-        for line in lines:
-            if line.startswith(username):
-                shadow_file.write(new_shadow + '\n')
-            else:
-                shadow_file.write(line)
-
+    command = f"sudo chage -E {expiration_date} {username}"
+    subprocess.call(command, shell=True)
 #محدودیت تعداد کاربر
 def limit_ssh_connections(username, maxlogins):
     command = f"sudo usermod --max-logins {maxlogins} {username}"
@@ -136,8 +117,7 @@ def nameen(message):
 def tarikh(message):
     global tari
     tari = message.text
-    input_date = datetime.datetime.strptime(tari, "%Y-%m-%d")
-    set_expiration_date(namett,input_date)
+    change_expiration(namett,tari)
     bot.send_message(message.chat.id,"🍷تاریخ کاربر ست شد !")  
 def nametedd(message):
     global utedd 
