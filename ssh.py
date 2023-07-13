@@ -52,20 +52,21 @@ if not check_line(sshd_config_file, replacement):
 #تنظیم متن بنر 
 f = open("banner.txt", "a+")
 f.close()
-def replace_line(filepathh, patternn, replacementt):
-    for line in fileinput.input(filepathh, inplace=True):
-        updated_line = re.sub(patternn, replacementt, line)
+def replace_linee(filepath, pattern, replacement):
+    for line in fileinput.input(filepath, inplace=True):
+        updated_line = re.sub(pattern, replacement, line)
         print(updated_line, end='')
 sshd_config_file = '/etc/ssh/sshd_config'
-patternn = r'^#Banner none'
+pattern = r'^#Banner none'
 replacement = 'Banner /root/banner.txt'
-def check_line(filepathh, patternn):
-    for line in fileinput.input(filepathh):
-        if re.search(patternn, line):
+def check_line(filepath, pattern):
+    for line in fileinput.input(filepath):
+        if re.search(pattern, line):
             return True
     return False
-if not check_line(sshd_config_file, replacementt):
-    replace_line(sshd_config_file, patternn, replacementt)
+if not check_line(sshd_config_file, replacement):
+    replace_linee(sshd_config_file, pattern, replacement)
+
 #شروع ربات
 bot = telebot.TeleBot(token)  
 key1 = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=2)
