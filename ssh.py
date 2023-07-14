@@ -76,6 +76,8 @@ def info(message):
         elif message.text == "⚙️تعداد کاربر⚙️":
             msg = bot.send_message(message.chat.id, "🎃نام کاربر را وارد کنید :",reply_markup=keyback)
             bot.register_next_step_handler(msg, nametedd)
+        elif message.text == "↩️برگشت↩️":
+            bot.send_message(message.chat.id,"↩️برگشتیم عشقم🍷",reply_markup=key1)
 def name(message):
     if message.text == "↩️برگشت↩️":
         bot.send_message(message.chat.id,"↩️برگشتیم عشقم🍷",reply_markup=key1)
