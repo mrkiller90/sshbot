@@ -2,7 +2,7 @@ import subprocess
 import time
 subprocess.call(["clear"])
 print("Wellcome To X-Killer Bot Script !\n id : @Mr_Killer_1 And @Amirwopi_Fox\n")
-time.sleep(1)
+time.sleep(5)
 subprocess.run(["sudo", "apt-get", "update"])
 subprocess.run(["sudo", "apt", "install", "python3-pip", "-y"])
 subprocess.run(["pip", "install", "telebot"])
