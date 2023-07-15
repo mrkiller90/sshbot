@@ -198,7 +198,7 @@ def namehagg(message):
     else:
         global uhagm
         uhagm = message.text
-        get_ssh_traffic(uhagm)
+        get_ssh_usage(uhagm)
 def karbaron(message):
     if message.text == "↩️برگشت↩️":
         bot.send_message(message.chat.id,"↩️برگشتیم عشقم🍷",reply_markup=key1)
