@@ -28,11 +28,25 @@ def change_expiration(username, expiration_date):
     command = f"sudo chage -E {expiration_date} {username}"
     subprocess.call(command, shell=True)
 #محدودیت تعداد کاربر
-def limit_ssh_connections(username, max_sessions):
-    command = f"sed -i 's/^#MaxSessions.*$/MaxSessions {max_sessions}/' /etc/ssh/sshd_config"
-    subprocess.run(['bash', '-c', command])
-    restart_command = "service ssh restart"
-    subprocess.run(['bash', '-c', restart_command])
+def check_ssh_user_connections(username, max_connections):
+    cmd = "w"
+    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, error = process.communicate() 
+    if error:
+        print(f"An error occurred: {error.decode('utf-8')}")
+        return    
+    output_lines = output.decode('utf-8').split('\n')
+    user_count = 0
+    for line in output_lines[2:]:
+        if line.strip():
+            parts = line.split()
+            if parts[0] == username:
+                user_count += 1
+    if user_count > max_connections:
+        print(f"Number of connections ({user_count}) exceeded the maximum allowed ({max_connections}).")
+        subprocess.call(f"pkill -u {username}", shell=True)
+    else:
+        print(f"Number of connections ({user_count}) is within the allowed limit.")
 #نمایش کاربران آنلاین
 def get_online_ssh_users():
     cmd = "w" 
@@ -55,8 +69,6 @@ def get_online_ssh_users():
             users.append(user)
     return users
 #نمایش حجم کاربر
-import subprocess
-
 def get_ssh_usage(username):
     cmd = f"du -s /home/{username} | awk '{{print $1}}'"
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -86,7 +98,7 @@ if not check_line(sshd_config_file, replacement):
 #شروع ربات
 bot = telebot.TeleBot(token)  
 key1 = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=2)
-key1.add("✍️افزودن کاربر✍️","✍️حذف کاربر✍️","⚙️محدودیت حجم⚙️","⚙️تاریخ انقضاء⚙️","⚙️تعداد کاربر⚙️","⚙️کاربران آنلاین⚙️","⚙️حجم کاربر⚙️")
+key1.add("✍️افزودن کاربر✍️","✍️حذف کاربر✍️","⚙️محدودیت حجم⚙️","⚙️تاریخ انقضاء⚙️","⚙️تعداد کاربر⚙️")
 keyback = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=2)
 keyback.add("↩️برگشت↩️")
 @bot.message_handler(commands=["start"])
@@ -190,7 +202,7 @@ def tedu(message):
         global tedaddy 
         tedaddy = message.text
         karbart = int(tedaddy)
-        limit_ssh_connections(utedd,karbart)
+        check_ssh_user_connections(utedd,karbart)
         bot.send_message(message.chat.id,"🍷تعداد کاربران مجاز ست شد !")  
 def namehagg(message):
     if message.text == "↩️برگشت↩️":
