@@ -29,24 +29,29 @@ def change_expiration(username, expiration_date):
     subprocess.call(command, shell=True)
 #محدودیت تعداد کاربر
 def check_ssh_user_connections(username, max_connections):
-    cmd = "w"
-    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output, error = process.communicate() 
-    if error:
-        print(f"An error occurred: {error.decode('utf-8')}")
-        return    
-    output_lines = output.decode('utf-8').split('\n')
-    user_count = 0
-    for line in output_lines[2:]:
-        if line.strip():
+    client = paramiko.SSHClient()
+    client.load_system_host_keys()
+    client.set_missing_host_key_policy(paramiko.WarningPolicy())
+    try:
+        client.connect(, username=username)
+        stdin, stdout, stderr = client.exec_command('w')
+        output = stdout.read().decode('utf-8')
+        user_count = 0
+        for line in output.split('\n'):
             parts = line.split()
-            if parts[0] == username:
+            if len(parts) > 0 and parts[0] == username:
                 user_count += 1
-    if user_count > max_connections:
-        print(f"Number of connections ({user_count}) exceeded the maximum allowed ({max_connections}).")
-        subprocess.call(f"pkill -u {username}", shell=True)
-    else:
-        print(f"Number of connections ({user_count}) is within the allowed limit.")
+        if user_count > max_connections:
+            print(f"Number of connections ({user_count}) exceeded the maximum allowed ({max_connections}).")
+        else:
+            print(f"Number of connections ({user_count}) is within the allowed limit.")
+    except paramiko.AuthenticationException:
+        print("Authentication failed.")
+    except paramiko.SSHException as e:
+        print(f"SSH error: {str(e)}")
+    finally:
+        client.close()
+
 #نمایش کاربران آنلاین
 def get_online_ssh_users():
     cmd = "w" 
