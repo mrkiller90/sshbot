@@ -33,6 +33,37 @@ def limit_ssh_connections(username, max_sessions):
     subprocess.run(['bash', '-c', command])
     restart_command = "service ssh restart"
     subprocess.run(['bash', '-c', restart_command])
+#نمایش کاربران آنلاین
+def get_online_ssh_users():
+    cmd = "w" 
+    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, error = process.communicate()
+    if error:
+        print(f"An error occurred: {error.decode('utf-8')}")
+        return
+    output_lines = output.decode('utf-8').split('\n')
+    users = []
+    for line in output_lines[2:]:
+        if line.strip():
+            parts = line.split()
+            user = {
+                'username': parts[0],
+                'tty': parts[1],
+                'from': parts[2],
+                'login_time': ' '.join(parts[3:]),
+            }
+            users.append(user)
+    return users
+#نمایش حجم کاربر
+def get_ssh_traffic(username):
+    cmd = f"iftop -i eth0 -f 'src host {username}'"
+    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, error = process.communicate()
+    if error:
+        print(f"An error occurred: {error.decode('utf-8')}")
+        return
+    natig = output.decode('utf-8')
+    bot.send_message(admin_id,natig,reply_markup=keyback)
 #رمزنگاری ssh
 def replace_line(filepath, pattern, replacement):
     for line in fileinput.input(filepath, inplace=True):
@@ -51,7 +82,7 @@ if not check_line(sshd_config_file, replacement):
 #شروع ربات
 bot = telebot.TeleBot(token)  
 key1 = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=2)
-key1.add("✍️افزودن کاربر✍️","✍️حذف کاربر✍️","⚙️محدودیت حجم⚙️","⚙️تاریخ انقضاء⚙️","⚙️تعداد کاربر⚙️")
+key1.add("✍️افزودن کاربر✍️","✍️حذف کاربر✍️","⚙️محدودیت حجم⚙️","⚙️تاریخ انقضاء⚙️","⚙️تعداد کاربر⚙️","⚙️کاربران آنلاین⚙️","⚙️حجم کاربر⚙️")
 keyback = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=2)
 keyback.add("↩️برگشت↩️")
 @bot.message_handler(commands=["start"])
@@ -76,6 +107,12 @@ def info(message):
         elif message.text == "⚙️تعداد کاربر⚙️":
             msg = bot.send_message(message.chat.id, "🎃نام کاربر را وارد کنید :",reply_markup=keyback)
             bot.register_next_step_handler(msg, nametedd)
+        elif message.text == "⚙️کاربران آنلاین⚙️":
+            mmssg = bot.send_message(message.chat.id, "☕اندکی صبر کنید.....",reply_markup=keyback)
+            bot.register_next_step_handler(mmssg, karbaron)
+        elif message.text == "⚙️حجم کاربر⚙️":
+            msghg = bot.send_message(message.chat.id, "🎃نام کاربر را وارد کنید :",reply_markup=keyback)
+            bot.register_next_step_handler(msghg, namehagg)
         elif message.text == "↩️برگشت↩️":
             bot.send_message(message.chat.id,"↩️برگشتیم عشقم🍷",reply_markup=key1)
 def name(message):
@@ -151,6 +188,20 @@ def tedu(message):
         karbart = int(tedaddy)
         limit_ssh_connections(utedd,karbart)
         bot.send_message(message.chat.id,"🍷تعداد کاربران مجاز ست شد !")  
+def namehagg(message):
+    if message.text == "↩️برگشت↩️":
+        bot.send_message(message.chat.id,"↩️برگشتیم عشقم🍷",reply_markup=key1)
+    else:
+        global uhagm
+        uhagm = message.text
+        get_ssh_traffic(uhagm)
+def karbaron(message):
+    if message.text == "↩️برگشت↩️":
+        bot.send_message(message.chat.id,"↩️برگشتیم عشقم🍷",reply_markup=key1)
+    else:
+        online_users = get_online_ssh_users()
+        for user in online_users:
+            bot.send_message(message.chat.id,user,reply_markup=keyback)
 bot.infinity_polling()
         
         
