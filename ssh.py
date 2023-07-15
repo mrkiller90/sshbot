@@ -28,30 +28,10 @@ def change_expiration(username, expiration_date):
     command = f"sudo chage -E {expiration_date} {username}"
     subprocess.call(command, shell=True)
 #محدودیت تعداد کاربر
-def check_ssh_user_connections(username, max_connections):
-    client = paramiko.SSHClient()
-    client.load_system_host_keys()
-    client.set_missing_host_key_policy(paramiko.WarningPolicy())
-    try:
-        client.connect(, username=username)
-        stdin, stdout, stderr = client.exec_command('w')
-        output = stdout.read().decode('utf-8')
-        user_count = 0
-        for line in output.split('\n'):
-            parts = line.split()
-            if len(parts) > 0 and parts[0] == username:
-                user_count += 1
-        if user_count > max_connections:
-            print(f"Number of connections ({user_count}) exceeded the maximum allowed ({max_connections}).")
-        else:
-            print(f"Number of connections ({user_count}) is within the allowed limit.")
-    except paramiko.AuthenticationException:
-        print("Authentication failed.")
-    except paramiko.SSHException as e:
-        print(f"SSH error: {str(e)}")
-    finally:
-        client.close()
-
+def check_ssh_connections(username, max_connections):
+    ssh_count = int(subprocess.check_output(f"ps -u {username} | grep sshd | wc -l", shell=True).decode())
+    if ssh_count > max_connections:
+        subprocess.run(f"pkill -u {username}", shell=True)
 #نمایش کاربران آنلاین
 def get_online_ssh_users():
     cmd = "w" 
@@ -207,7 +187,7 @@ def tedu(message):
         global tedaddy 
         tedaddy = message.text
         karbart = int(tedaddy)
-        check_ssh_user_connections(utedd,karbart)
+        check_ssh_connections(utedd,karbart)
         bot.send_message(message.chat.id,"🍷تعداد کاربران مجاز ست شد !")  
 def namehagg(message):
     if message.text == "↩️برگشت↩️":
