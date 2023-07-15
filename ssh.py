@@ -66,8 +66,8 @@ def get_ssh_usage(username):
         return
     usage_kb = int(output.decode('utf-8').strip())
     return usage_kb / (1024 * 1024)  # Convert to GB
-ssh_usage_gb = get_ssh_usage(username)
-bot.send_message(admin_id,f"SSH usage for {username}: {ssh_usage_gb} GB",reply_markup=keyback)
+    ssh_usage_gb = get_ssh_usage(username)
+    bot.send_message(admin_id,f"SSH usage for {username}: {ssh_usage_gb} GB",reply_markup=keyback)
 #رمزنگاری ssh
 def replace_line(filepath, pattern, replacement):
     for line in fileinput.input(filepath, inplace=True):
