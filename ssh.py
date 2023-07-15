@@ -55,15 +55,19 @@ def get_online_ssh_users():
             users.append(user)
     return users
 #نمایش حجم کاربر
-def get_ssh_traffic(username):
-    cmd = f"iftop -i eth0 -f 'src host {username}'"
+import subprocess
+
+def get_ssh_usage(username):
+    cmd = f"du -s /home/{username} | awk '{{print $1}}'"
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, error = process.communicate()
     if error:
         print(f"An error occurred: {error.decode('utf-8')}")
         return
-    natig = output.decode('utf-8')
-    bot.send_message(admin_id,natig,reply_markup=keyback)
+    usage_kb = int(output.decode('utf-8').strip())
+    return usage_kb / (1024 * 1024)  # Convert to GB
+ssh_usage_gb = get_ssh_usage(username)
+bot.send_message(admin_id,f"SSH usage for {username}: {ssh_usage_gb} GB",reply_markup=keyback)
 #رمزنگاری ssh
 def replace_line(filepath, pattern, replacement):
     for line in fileinput.input(filepath, inplace=True):
